@@ -25,25 +25,31 @@ public class AntipodalWall extends ViewGroup {
 		final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AntipodalWallAttrs);
 		columns = a.getInt(R.styleable.AntipodalWallAttrs_columns, 1);
         if(columns < 1)
-        	columns = 1;    
+        	columns = 1;
 	}
 	
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
+		int parentHeight = MeasureSpec.getSize(heightMeasureSpec);
+		
 		for(int i=0;i<getChildCount();i++) {
 			View child = getChildAt(i);
-			child.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+			int childWidthSpec = MeasureSpec.makeMeasureSpec(parentWidth / columns, MeasureSpec.EXACTLY);
+			int childHeightSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+			child.measure(childWidthSpec, childHeightSpec);
 		}
 		
-		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+		setMeasuredDimension(parentWidth, parentHeight);
 	}
 
 	@Override
 	protected void onLayout(boolean changed, int l, int t, int r, int b) {
+		int x = 0;
 		for(int i=0;i<getChildCount();i++) {
-			View child = getChildAt(i);
-			int h = child.getMeasuredHeight();
-			String a = "b";
+			View view = getChildAt(i);
+			view.layout(l, t, l + view.getMeasuredWidth(), t + view.getMeasuredHeight());
+			t = t + view.getMeasuredHeight();
 		}
 	}
 }
