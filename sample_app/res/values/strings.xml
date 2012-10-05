@@ -1,0 +1,8 @@
+<resources>
+
+    <string name="app_name">AntipodalWallSample</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_antipodal_wall_sample">Antipodal Wall Sample</string>
+
+</resources>
