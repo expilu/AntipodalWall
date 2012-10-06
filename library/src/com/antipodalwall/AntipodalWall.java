@@ -1,22 +1,15 @@
 package com.antipodalwall;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-
-import android.R.anim;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
-import android.widget.AnalogClock;
-import android.widget.LinearLayout;
 
 
 public class AntipodalWall extends ViewGroup {
 	
 	private int columns;
+	private float columnWidth = 0;
 
 	public AntipodalWall(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -32,10 +25,11 @@ public class AntipodalWall extends ViewGroup {
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
 		int parentHeight = MeasureSpec.getSize(heightMeasureSpec);
+		columnWidth = parentWidth / columns;
 		
 		for(int i=0;i<getChildCount();i++) {
 			View child = getChildAt(i);
-			int childWidthSpec = MeasureSpec.makeMeasureSpec(parentWidth / columns, MeasureSpec.EXACTLY);
+			int childWidthSpec = MeasureSpec.makeMeasureSpec((int)columnWidth, MeasureSpec.EXACTLY);
 			int childHeightSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
 			child.measure(childWidthSpec, childHeightSpec);
 		}
@@ -45,11 +39,26 @@ public class AntipodalWall extends ViewGroup {
 
 	@Override
 	protected void onLayout(boolean changed, int l, int t, int r, int b) {
-		int x = 0;
+		int[] columns_t = new int[columns];
+		
 		for(int i=0;i<getChildCount();i++) {
 			View view = getChildAt(i);
-			view.layout(l, t, l + view.getMeasuredWidth(), t + view.getMeasuredHeight());
-			t = t + view.getMeasuredHeight();
+			int column = findLowerColumn(columns_t);
+			int left = l + (int)(columnWidth * column);
+			view.layout(left, columns_t[column], left + view.getMeasuredWidth(), columns_t[column] + view.getMeasuredHeight());
+			columns_t[column] = columns_t[column] + view.getMeasuredHeight();
 		}
+	}
+	
+	private int findLowerColumn(int[] columns) {
+		int minValue = columns[0];
+		int column = 0;
+		for(int i=1;i<columns.length;i++){  
+			if(columns[i] < minValue){  
+				minValue = columns[i];
+				column = i;
+			}  
+		}  
+		return column;  
 	}
 }
