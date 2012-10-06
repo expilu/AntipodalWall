@@ -14,7 +14,8 @@ public class AntipodalWall extends ViewGroup {
 	public AntipodalWall(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		
-		//Load attrs
+		//Load the attrs from the XML
+		//- number of columns
 		final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AntipodalWallAttrs);
 		columns = a.getInt(R.styleable.AntipodalWallAttrs_columns, 1);
         if(columns < 1)
@@ -29,7 +30,9 @@ public class AntipodalWall extends ViewGroup {
 		
 		for(int i=0;i<getChildCount();i++) {
 			View child = getChildAt(i);
+			 //force the width of the children to be that of the columns...
 			int childWidthSpec = MeasureSpec.makeMeasureSpec((int)columnWidth, MeasureSpec.EXACTLY);
+			 //... but let them grow vertically
 			int childHeightSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
 			child.measure(childWidthSpec, childHeightSpec);
 		}
@@ -43,6 +46,7 @@ public class AntipodalWall extends ViewGroup {
 		
 		for(int i=0;i<getChildCount();i++) {
 			View view = getChildAt(i);
+			//We place each child  in the column that has the less height to the moment
 			int column = findLowerColumn(columns_t);
 			int left = l + (int)(columnWidth * column);
 			view.layout(left, columns_t[column], left + view.getMeasuredWidth(), columns_t[column] + view.getMeasuredHeight());
