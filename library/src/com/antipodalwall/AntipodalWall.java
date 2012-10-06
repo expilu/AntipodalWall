@@ -10,23 +10,40 @@ public class AntipodalWall extends ViewGroup {
 	
 	private int columns;
 	private float columnWidth = 0;
+	private int paddingL = 0;
+	private int paddingT = 0;
+	private int paddingR = 0;
+	private int paddingB = 0;
 
 	public AntipodalWall(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		
 		//Load the attrs from the XML
+		final TypedArray customAttrsArray = context.obtainStyledAttributes(attrs, R.styleable.AntipodalWallAttrs);
 		//- number of columns
-		final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AntipodalWallAttrs);
-		columns = a.getInt(R.styleable.AntipodalWallAttrs_columns, 1);
+		columns = customAttrsArray.getInt(R.styleable.AntipodalWallAttrs_columns, 1);
         if(columns < 1)
         	columns = 1;
+        //- general padding (padding was not being handled correctly)
+        setGeneralPadding(customAttrsArray.getDimensionPixelSize(R.styleable.AntipodalWallAttrs_android_padding, 0));
+        //- specific paddings
+        paddingL = customAttrsArray.getDimensionPixelSize(R.styleable.AntipodalWallAttrs_android_paddingLeft, paddingL);
+        paddingT = customAttrsArray.getDimensionPixelSize(R.styleable.AntipodalWallAttrs_android_paddingTop, paddingT);
+        paddingR = customAttrsArray.getDimensionPixelSize(R.styleable.AntipodalWallAttrs_android_paddingRight, paddingR);
+        paddingB = customAttrsArray.getDimensionPixelSize(R.styleable.AntipodalWallAttrs_android_paddingBottom, paddingB);
 	}
 	
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
+		int parentUsableWidth = parentWidth - paddingL - paddingR; //Usable width for children once padding is removed
+		if(parentUsableWidth < 0)
+			parentUsableWidth = 0;
 		int parentHeight = MeasureSpec.getSize(heightMeasureSpec);
-		columnWidth = parentWidth / columns;
+		int parentUsableHeight = parentHeight - paddingT - paddingB; //Usable height for children once padding is removed
+		if(parentUsableHeight < 0)
+			parentUsableHeight = 0;
+		columnWidth = parentUsableWidth / columns;
 		
 		for(int i=0;i<getChildCount();i++) {
 			View child = getChildAt(i);
@@ -48,8 +65,8 @@ public class AntipodalWall extends ViewGroup {
 			View view = getChildAt(i);
 			//We place each child  in the column that has the less height to the moment
 			int column = findLowerColumn(columns_t);
-			int left = l + (int)(columnWidth * column);
-			view.layout(left, columns_t[column], left + view.getMeasuredWidth(), columns_t[column] + view.getMeasuredHeight());
+			int left = paddingL + l + (int)(columnWidth * column);
+			view.layout(left, columns_t[column] + paddingT, left + view.getMeasuredWidth(), columns_t[column] + view.getMeasuredHeight() + paddingT);
 			columns_t[column] = columns_t[column] + view.getMeasuredHeight();
 		}
 	}
@@ -64,5 +81,12 @@ public class AntipodalWall extends ViewGroup {
 			}  
 		}  
 		return column;  
+	}
+	
+	private void setGeneralPadding(int padding) {
+		paddingL = padding;
+		paddingT = padding;
+		paddingR = padding;
+		paddingB = padding;
 	}
 }

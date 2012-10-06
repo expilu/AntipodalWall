@@ -2,7 +2,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="5dp"
     app:columns="2">
     
     <TextView android:layout_width="wrap_content"
@@ -52,7 +51,7 @@
     <TextView android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="#00ffff"
-        android:text="When in doubt, use brute force."/>
+        android:text="There's no place like 127.0.0.1"/>
     
     <LinearLayout android:layout_width="match_parent"
     	android:layout_height="wrap_content"
@@ -77,7 +76,7 @@
     </LinearLayout>
     <LinearLayout android:layout_width="match_parent"
     	android:layout_height="wrap_content"
-    	android:background="#000000">
+    	android:background="#ff00ff">
     	<TextView android:layout_width="match_parent"
         	android:layout_height="wrap_content"        
         	android:text="Don’t worry if it doesn’t work right.  If everything did, you’d be out of a job."/>
