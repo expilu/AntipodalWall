@@ -3,11 +3,11 @@ AntipodalWall
 
 AntipodalWall is an standalone library designed to provide a so called "masonry"
 grid layout (much like Pinterest app). This layout acommodates it's children views
-in a number of configurable columns letting them grow vertically as much as they need.
+in a configurable number of columns letting them grow vertically as much as they need.
 
 Why the name
 ============
-Well... the layout looks much like a masonry wall, but inverted. Like in the antipodes.
+Well... the layout looks much like a masonry wall, but inverted. Like if it was in the antipodes.
 
 How to use
 ==========
@@ -16,7 +16,7 @@ or greater you can include AntipodalWall as a library project. Create a new Andr
 in Eclipse using the library/ folder as the existing source. Then, in your project properties,
 add the created project under the ‘Libraries’ section of the ‘Android’ category.
 
-Then in your XML layout file, you can add the layout like this:
+Then, in your XML layout file, you can add the layout like this:
 
     <com.antipodalwall.AntipodalWallLayout xmlns:android="http://schemas.android.com/apk/res/android"
     	xmlns:app="http://schemas.android.com/apk/res-auto"
