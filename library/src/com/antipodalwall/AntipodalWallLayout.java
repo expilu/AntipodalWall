@@ -1,7 +1,9 @@
 package com.antipodalwall;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.text.method.Touch;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -14,12 +16,19 @@ public class AntipodalWallLayout extends ViewGroup {
 	private int paddingT = 0;
 	private int paddingR = 0;
 	private int paddingB = 0;
+	int parentHeight = 0;
+	private int finalHeight = 0;
+	private int y_move = 0;
 
 	public AntipodalWallLayout(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		
+		setWillNotDraw(false);
+		
 		//Load the attrs from the XML
 		final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AntipodalWallAttrs);
+		//- scrollbars
+		initializeScrollbars(a);
 		//- number of columns
 		columns = a.getInt(R.styleable.AntipodalWallAttrs_columns, 1);
         if(columns < 1)
@@ -31,6 +40,8 @@ public class AntipodalWallLayout extends ViewGroup {
         paddingT = a.getDimensionPixelSize(R.styleable.AntipodalWallAttrs_android_paddingTop, paddingT);
         paddingR = a.getDimensionPixelSize(R.styleable.AntipodalWallAttrs_android_paddingRight, paddingR);
         paddingB = a.getDimensionPixelSize(R.styleable.AntipodalWallAttrs_android_paddingBottom, paddingB);
+        
+        a.recycle();
 	}
 	
 	@Override
@@ -39,7 +50,7 @@ public class AntipodalWallLayout extends ViewGroup {
 		int parentUsableWidth = parentWidth - paddingL - paddingR; //Usable width for children once padding is removed
 		if(parentUsableWidth < 0)
 			parentUsableWidth = 0;
-		int parentHeight = MeasureSpec.getSize(heightMeasureSpec);
+		parentHeight = MeasureSpec.getSize(heightMeasureSpec);
 		int parentUsableHeight = parentHeight - paddingT - paddingB; //Usable height for children once padding is removed
 		if(parentUsableHeight < 0)
 			parentUsableHeight = 0;
@@ -61,7 +72,7 @@ public class AntipodalWallLayout extends ViewGroup {
 			int column = findLowerColumn(columns_t);
 			columns_t[column] += getChildAt(i).getMeasuredHeight();
 		}
-		int finalHeight = columns_t[findHigherColumn(columns_t)];
+		finalHeight = columns_t[findHigherColumn(columns_t)];
 		
 		setMeasuredDimension(parentWidth, finalHeight);
 	}
@@ -78,6 +89,42 @@ public class AntipodalWallLayout extends ViewGroup {
 			view.layout(left, columns_t[column] + paddingT, left + view.getMeasuredWidth(), columns_t[column] + view.getMeasuredHeight() + paddingT);
 			columns_t[column] = columns_t[column] + view.getMeasuredHeight();
 		}
+	}
+	
+	@Override
+	protected int computeVerticalScrollExtent() {
+	    return parentHeight - (finalHeight - parentHeight);
+	}
+
+	@Override
+	protected int computeVerticalScrollOffset() {
+	    return getScrollY();
+	}
+
+	@Override
+	protected int computeVerticalScrollRange() {
+	    return finalHeight;
+	}
+	
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+	    awakenScrollBars();
+	    int eventaction = event.getAction();
+	    switch (eventaction) {
+		case MotionEvent.ACTION_MOVE:
+			//habdle vertical scrolling
+			if(isVerticalScrollBarEnabled()) {
+				if(event.getHistorySize() > 0) {
+					y_move = - (int)(event.getY() - event.getHistoricalY(event.getHistorySize() - 1));
+					int result_scroll = getScrollY() + y_move;
+					if(result_scroll >= 0 && result_scroll <= finalHeight - parentHeight)
+						scrollBy(0, y_move);
+		    	}
+			}
+			break;
+		}
+	    invalidate();
+	    return true;
 	}
 	
 	private int findLowerColumn(int[] columns) {
