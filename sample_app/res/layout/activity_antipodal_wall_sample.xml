@@ -1,7 +1,11 @@
-<com.antipodalwall.AntipodalWall xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+<com.antipodalwall.AntipodalWallLayout 
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/antipodal_wall"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     app:columns="2">
     
     <TextView android:layout_width="wrap_content"
@@ -82,4 +86,5 @@
         	android:text="Don’t worry if it doesn’t work right.  If everything did, you’d be out of a job."/>
     </LinearLayout>
 
-</com.antipodalwall.AntipodalWall>
+</com.antipodalwall.AntipodalWallLayout>
+</ScrollView>

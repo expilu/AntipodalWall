@@ -3,10 +3,10 @@
 	<declare-styleable name="AntipodalWallAttrs">
 	    <!--  android attrs -->
 	    <attr name="android:padding"/>
-	    <attr name="android:paddingLeft"/>
-	    <attr name="android:paddingTop"/>
-	    <attr name="android:paddingRight"/>
 	    <attr name="android:paddingBottom"/>
+	    <attr name="android:paddingLeft"/>
+	    <attr name="android:paddingRight"/>
+	    <attr name="android:paddingTop"/>
 	    <!-- custom attrs -->
 		<attr name="columns" format="integer" />
 	</declare-styleable>
