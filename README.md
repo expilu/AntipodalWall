@@ -3,9 +3,7 @@ AntipodalWall
 
 AntipodalWall is an standalone library designed to provide a so called "masonry"
 grid layout (much like Pinterest app). This layout acommodates it's children views
-in a configurable number of columns letting them grow vertically as much as they need.
-
-Check our page [here][2]
+in a configurable number of columns letting them grow vertically as much as they need. Check the page [here][2]
 
 ![Example Image][1]
 
