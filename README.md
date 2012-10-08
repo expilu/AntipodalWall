@@ -23,10 +23,13 @@ Then, in your XML layout file, you can add the layout like this:
     <com.antipodalwall.AntipodalWallLayout xmlns:android="http://schemas.android.com/apk/res/android"
     	xmlns:app="http://schemas.android.com/apk/res-auto"
     	android:id="@+id/antipodal_wall"
-    	android:layout_width="match_parent"
-    	android:layout_height="wrap_content"
-	android:scrollbars="vertical"
-    	android:columnCount="2">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical"
+        android:columnCount="4"
+        android:padding="2dp"
+        android:verticalSpacing="2dp"
+        android:horizontalSpacing="2dp">
         <!-- Your child views go here -->
     </com.antipodalwall.AntipodalWallLayout>
 
