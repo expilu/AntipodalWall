@@ -4,6 +4,7 @@
 	    <!--  android attrs -->
 	    <attr name="android:columnCount"/>
 		<attr name="android:fadeScrollbars"/>
+		<attr name="android:horizontalSpacing"/>
 		<attr name="android:isScrollContainer"/>
 		<attr name="android:padding"/>
 		<attr name="android:paddingBottom"/>
@@ -20,5 +21,6 @@
 		<attr name="android:scrollbarTrackHorizontal"/>
 		<attr name="android:scrollbarTrackVertical"/>
 		<attr name="android:scrollbars"/>
+		<attr name="android:verticalSpacing"/>
 	</declare-styleable>
 </resources>
