@@ -2,6 +2,7 @@
 <resources>
 	<declare-styleable name="AntipodalWallAttrs">
 	    <!--  android attrs -->
+	    <attr name="android:columnCount"/>
 		<attr name="android:fadeScrollbars"/>
 		<attr name="android:isScrollContainer"/>
 		<attr name="android:padding"/>
@@ -19,7 +20,5 @@
 		<attr name="android:scrollbarTrackHorizontal"/>
 		<attr name="android:scrollbarTrackVertical"/>
 		<attr name="android:scrollbars"/>
-	    <!-- custom attrs -->
-		<attr name="columns" format="integer" />
 	</declare-styleable>
 </resources>

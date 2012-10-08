@@ -24,7 +24,7 @@ Then, in your XML layout file, you can add the layout like this:
     	android:layout_width="match_parent"
     	android:layout_height="wrap_content"
 	android:scrollbars="vertical"
-    	app:columns="2">
+    	android:columnCount="2">
         <!-- Your child views go here -->
     </com.antipodalwall.AntipodalWallLayout>
 

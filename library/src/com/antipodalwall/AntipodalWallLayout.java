@@ -1,7 +1,6 @@
 package com.antipodalwall;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.text.method.Touch;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -30,7 +29,7 @@ public class AntipodalWallLayout extends ViewGroup {
 		//- scrollbars
 		initializeScrollbars(a);
 		//- number of columns
-		columns = a.getInt(R.styleable.AntipodalWallAttrs_columns, 1);
+		columns = a.getInt(R.styleable.AntipodalWallAttrs_android_columnCount, 1);
         if(columns < 1)
         	columns = 1;
         //- general padding (padding was not being handled correctly)

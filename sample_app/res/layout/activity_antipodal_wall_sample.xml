@@ -1,10 +1,70 @@
 <com.antipodalwall.AntipodalWallLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/antipodal_wall"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:padding="2dp"
     android:scrollbars="vertical"
-    app:columns="2">
+    android:columnCount="2">
+    
+    <LinearLayout android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="vertical"
+    	android:background="#dddddd"
+    	android:padding="2dp">
+        <ImageView android:layout_width="match_parent"
+    		android:layout_height="wrap_content"
+    		android:src="@drawable/dog_0"
+    		android:scaleType="centerInside"
+    		android:adjustViewBounds="true"/>
+        <TextView android:layout_width="wrap_content"
+    		android:layout_height="wrap_content"
+    		android:text="Akita Inu"/>
+    </LinearLayout>
+    
+    <LinearLayout android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="vertical"
+    	android:background="#dddddd"
+    	android:padding="2dp">
+        <ImageView android:layout_width="match_parent"
+    		android:layout_height="wrap_content"
+    		android:src="@drawable/dog_1"
+    		android:scaleType="centerInside"
+    		android:adjustViewBounds="true"/>
+        <TextView android:layout_width="wrap_content"
+    		android:layout_height="wrap_content"
+    		android:text="Perro de Presa Canario"/>
+    </LinearLayout>
+    
+    <LinearLayout android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="vertical"
+    	android:background="#dddddd"
+    	android:padding="2dp">
+        <ImageView android:layout_width="match_parent"
+    		android:layout_height="wrap_content"
+    		android:src="@drawable/dog_2"
+    		android:scaleType="centerInside"
+    		android:adjustViewBounds="true"/>
+        <TextView android:layout_width="wrap_content"
+    		android:layout_height="wrap_content"
+    		android:text="Papillon"/>
+    </LinearLayout>
+    
+    <LinearLayout android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="vertical"
+    	android:background="#dddddd"
+    	android:padding="2dp">
+        <ImageView android:layout_width="match_parent"
+    		android:layout_height="wrap_content"
+    		android:src="@drawable/dog_3"
+    		android:scaleType="centerInside"
+    		android:adjustViewBounds="true"/>
+        <TextView android:layout_width="wrap_content"
+    		android:layout_height="wrap_content"
+    		android:text="German shepherd"/>
+    </LinearLayout>
     
     <TextView android:layout_width="wrap_content"
         android:layout_height="wrap_content"
