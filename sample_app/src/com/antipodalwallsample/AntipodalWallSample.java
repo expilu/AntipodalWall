@@ -16,7 +16,8 @@ public class AntipodalWallSample extends Activity {
         
         AntipodalWallLayout layout = (AntipodalWallLayout)findViewById(R.id.antipodal_wall);
         TextView tv = new TextView(this);
-        tv.setText("This one have been added from code");
+        tv.setText("This one has been added from code");
+        tv.setBackgroundColor(getResources().getColor(android.R.color.black));
         layout.addView(tv);
     }
 

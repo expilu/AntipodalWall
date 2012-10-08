@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:scrollbars="vertical"
-    android:columnCount="3"
+    android:columnCount="2"
     android:padding="2dp"
     android:verticalSpacing="2dp"
     android:horizontalSpacing="2dp">
@@ -68,82 +68,64 @@
     		android:text="German shepherd"/>
     </LinearLayout>
     
-    <TextView android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#ffff00"
-        android:text="One of my most productive days was throwing away 1000 lines of code."/>
-    
-    <TextView android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#00ffff"
-        android:text="When in doubt, use brute force."/>
+    <LinearLayout android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="vertical"
+    	android:background="#dddddd"
+    	android:padding="2dp">
+        <ImageView android:layout_width="match_parent"
+    		android:layout_height="wrap_content"
+    		android:src="@drawable/dog_4"
+    		android:scaleType="centerInside"
+    		android:adjustViewBounds="true"/>
+        <TextView android:layout_width="wrap_content"
+    		android:layout_height="wrap_content"
+    		android:text="American staffordshire terrier"/>
+    </LinearLayout>
     
     <LinearLayout android:layout_width="match_parent"
     	android:layout_height="wrap_content"
-    	android:background="#ff0000">
-    	<TextView android:layout_width="match_parent"
-        	android:layout_height="wrap_content"        
-        	android:text="And folks, let's be honest. Sturgeon was an optimist. Way more than 90% of code is crap."/>
+    	android:orientation="vertical"
+    	android:background="#dddddd"
+    	android:padding="2dp">
+        <ImageView android:layout_width="match_parent"
+    		android:layout_height="wrap_content"
+    		android:src="@drawable/dog_5"
+    		android:scaleType="centerInside"
+    		android:adjustViewBounds="true"/>
+        <TextView android:layout_width="wrap_content"
+    		android:layout_height="wrap_content"
+    		android:text="Belgian shepherd"/>
     </LinearLayout>
-    <LinearLayout android:layout_width="match_parent"
-    	android:layout_height="wrap_content"
-    	android:background="#00ff00">
-    	<TextView android:layout_width="match_parent"
-        	android:layout_height="wrap_content"        
-        	android:text="All software sucks, be it open-source [or] proprietary. The only question is what can be done with particular instance of suckage, and that's where having the source matters."/>
-    </LinearLayout>
-    <LinearLayout android:layout_width="match_parent"
-    	android:layout_height="wrap_content"
-    	android:background="#0000ff">
-    	<TextView android:layout_width="match_parent"
-        	android:layout_height="wrap_content"        
-        	android:text="For a long time it puzzled me how something so expensive, so leading edge, could be so useless. And then it occurred to me that a computer is a stupid machine with the ability to do incredibly smart things, while computer programmers are smart people with the ability to do incredibly stupid things. They are, in short, a perfect match."/>
-    </LinearLayout>
-    <LinearLayout android:layout_width="match_parent"
-    	android:layout_height="wrap_content"
-    	android:background="#ff00ff">
-    	<TextView android:layout_width="match_parent"
-        	android:layout_height="wrap_content"        
-        	android:text="Talk is cheap. Show me the code."/>
-    </LinearLayout>
-    
-    <TextView android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#ffff00"
-        android:text="Most software today is very much like an Egyptian pyramid with millions of bricks piled on top of each other, with no structural integrity, but just done by brute force and thousands of slaves."/>
-    
-    <TextView android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="#00ffff"
-        android:text="There's no place like 127.0.0.1"/>
     
     <LinearLayout android:layout_width="match_parent"
     	android:layout_height="wrap_content"
-    	android:background="#ff0000">
-    	<TextView android:layout_width="match_parent"
-        	android:layout_height="wrap_content"        
-        	android:text="There are only two industries that refer to their customers as ‘users’."/>
+    	android:orientation="vertical"
+    	android:background="#dddddd"
+    	android:padding="2dp">
+        <ImageView android:layout_width="match_parent"
+    		android:layout_height="wrap_content"
+    		android:src="@drawable/dog_7"
+    		android:scaleType="centerInside"
+    		android:adjustViewBounds="true"/>
+        <TextView android:layout_width="wrap_content"
+    		android:layout_height="wrap_content"
+    		android:text="Blue lacy"/>
     </LinearLayout>
+    
     <LinearLayout android:layout_width="match_parent"
     	android:layout_height="wrap_content"
-    	android:background="#00ff00">
-    	<TextView android:layout_width="match_parent"
-        	android:layout_height="wrap_content"        
-        	android:text="Most of you are familiar with the virtues of a programmer.  There are three, of course: laziness, impatience, and hubris."/>
+    	android:orientation="vertical"
+    	android:background="#dddddd"
+    	android:padding="2dp">
+        <ImageView android:layout_width="match_parent"
+    		android:layout_height="wrap_content"
+    		android:src="@drawable/dog_8"
+    		android:scaleType="centerInside"
+    		android:adjustViewBounds="true"/>
+        <TextView android:layout_width="wrap_content"
+    		android:layout_height="wrap_content"
+    		android:text="Boykin spaniel"/>
     </LinearLayout>
-    <LinearLayout android:layout_width="match_parent"
-    	android:layout_height="wrap_content"
-    	android:background="#0000ff">
-    	<TextView android:layout_width="match_parent"
-        	android:layout_height="wrap_content"        
-        	android:text="The trouble with programmers is that you can never tell what a programmer is doing until it’s too late."/>
-    </LinearLayout>
-    <LinearLayout android:layout_width="match_parent"
-    	android:layout_height="wrap_content"
-    	android:background="#ff00ff">
-    	<TextView android:layout_width="match_parent"
-        	android:layout_height="wrap_content"        
-        	android:text="Don’t worry if it doesn’t work right.  If everything did, you’d be out of a job."/>
-    </LinearLayout>
-
+    
 </com.antipodalwall.AntipodalWallLayout>
