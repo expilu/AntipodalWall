@@ -5,6 +5,8 @@ AntipodalWall is an standalone library designed to provide a so called "masonry"
 grid layout (much like Pinterest app). This layout acommodates it's children views
 in a configurable number of columns letting them grow vertically as much as they need.
 
+![Example Image][1]
+
 Why the name
 ============
 Well... the layout looks much like a masonry wall, but inverted. Like if it was in the antipodes.
@@ -58,3 +60,5 @@ License
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     See the License for the specific language governing permissions and
     limitations under the License.
+    
+[1]: https://docs.google.com/open?id=0B57uR_zkDzmaemRmR2RQUDNkNEU
