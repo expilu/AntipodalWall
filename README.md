@@ -61,4 +61,4 @@ License
     See the License for the specific language governing permissions and
     limitations under the License.
     
-[1]: https://docs.google.com/open?id=0B57uR_zkDzmaemRmR2RQUDNkNEU
+[1]: https://lh4.googleusercontent.com/f4SwpNnr6ywLsFd069PM7ghQnDy_z9SFRk1tagnRpsMGGGs89SlUPK2xyT7zxVCDxRCC_BE44pA
