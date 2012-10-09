@@ -1,5 +1,5 @@
-AntipodalWall
-=============
+AntipodalWall (beta!)
+=====================
 
 AntipodalWall is an standalone library designed to provide a so called "masonry"
 grid layout for Android (much like Pinterest app). This layout acommodates it's children views
