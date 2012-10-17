@@ -11,6 +11,10 @@ Why the name
 ============
 Well... the layout looks much like a masonry wall, but inverted. Like if it was in the antipodes.
 
+Beta!
+=====
+The layout is still in an early stage of development. Specifically it needs work in memory handling for scrolling (view recycling), so right now it is not smooth with a lot of children and/or images.
+
 How to use
 ==========
 Assuming you’re using the Eclipse Development Environment with the ADT plugin version 0.9.7
