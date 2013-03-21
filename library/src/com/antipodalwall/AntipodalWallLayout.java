@@ -2,6 +2,7 @@ package com.antipodalwall;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.database.DataSetObserver;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -53,7 +54,10 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	 * android:verticalSpacing in the XML layout
 	 */
 	private int mVerticalSpacing;
-
+	/** The Adapter to use */
+	private Adapter mAdapter;
+	/** Layout params for children views*/
+	private LayoutParams mChildLayoutParams;
 	
 	//================================================================================
 	// Constructor
@@ -94,6 +98,8 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 
 		awakenScrollBars(); // TODO Scrollbars should be shown only if enabled
 							// in XML attributes
+		
+		mChildLayoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 	}
 	
 	//================================================================================
@@ -122,29 +128,7 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 		mColumnWidth = layoutUsableWidth / mColumns
 				- ((mHorizontalSpacing * (mColumns - 1)) / mColumns);
 
-		// Measure each children
-		for (int i = 0; i < getChildCount(); i++) {
-			View child = getChildAt(i);
-			// force the width of the children to be the width previously
-			// calculated for columns...
-			int childWidthSpec = MeasureSpec.makeMeasureSpec(
-					(int) mColumnWidth, MeasureSpec.EXACTLY);
-			// ... but let them grow vertically
-			int childHeightSpec = MeasureSpec.makeMeasureSpec(0,
-					MeasureSpec.UNSPECIFIED);
-			child.measure(childWidthSpec, childHeightSpec);
-		}
-
-		// Get the final total height of the layout. It will be that of the
-		// higher column once all chidren are in place. Every child is added to
-		// the sortest column at the moment of addition
-		int[] columnsHeights = new int[mColumns];
-		for (int i = 0; i < getChildCount(); i++) {
-			int column = findColumn(columnsHeights, ColumnSpec.LOWEST);
-			columnsHeights[column] += getChildAt(i).getMeasuredHeight();
-		}
-		mFinalHeight = columnsHeights[findColumn(columnsHeights,
-				ColumnSpec.HIGHEST)];
+		mFinalHeight = mLayoutHeight;
 
 		setMeasuredDimension(layoutWidth, mFinalHeight);
 	}
@@ -156,21 +140,31 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	 */
 	@Override
 	protected void onLayout(boolean changed, int l, int t, int r, int b) {
-		int[] columnsHeights = new int[mColumns];
+		super.onLayout(changed, l, t, r, b);
+		
+		if (mAdapter == null)
+	        return;
 
-		// We place each child in the column that has the sortest height at the
-		// moment
-		for (int i = 0; i < getChildCount(); i++) {
-			View view = getChildAt(i);
+		int[] columnsHeights = new int[mColumns];
+		for(int i = 0; i < mAdapter.getCount(); i++) {
+			View child = mAdapter.getView(i, null, null);
+			addViewInLayout(child, i, mChildLayoutParams);
+			int childWidthSpec = MeasureSpec.makeMeasureSpec((int) mColumnWidth, MeasureSpec.EXACTLY);
+			int childHeightSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+			child.measure(childWidthSpec, childHeightSpec);
+			
 			int column = findColumn(columnsHeights, ColumnSpec.LOWEST);
-			int left = mPaddingL + l + (int) (mColumnWidth * column)
-					+ (mHorizontalSpacing * column);
-			view.layout(left, columnsHeights[column] + mPaddingT,
-					left + view.getMeasuredWidth(), columnsHeights[column]
-							+ view.getMeasuredHeight() + mPaddingT);
+			int left = mPaddingL + l + (int) (mColumnWidth * column) + (mHorizontalSpacing * column);
+			child.layout(left, columnsHeights[column] + mPaddingT,
+					left + child.getMeasuredWidth(), columnsHeights[column]
+							+ child.getMeasuredHeight() + mPaddingT);
 			columnsHeights[column] = columnsHeights[column]
-					+ view.getMeasuredHeight() + mVerticalSpacing;
+					+ child.getMeasuredHeight() + mVerticalSpacing;
 		}
+
+		mFinalHeight = columnsHeights[findColumn(columnsHeights,
+				ColumnSpec.HIGHEST)];
+		
 	}
 
 	/*
@@ -274,7 +268,6 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 		mPaddingB = padding;
 	}
 	
-	
 	//================================================================================
 	// Getters & Setters
     //================================================================================
@@ -284,8 +277,7 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	 */
 	@Override
 	public Adapter getAdapter() {
-		// TODO Auto-generated method stub
-		return null;
+		return mAdapter;
 	}	
 
 	/* (non-Javadoc)
@@ -293,8 +285,9 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	 */
 	@Override
 	public void setAdapter(Adapter adapter) {
-		// TODO Auto-generated method stub
-		
+		mAdapter = adapter;
+		removeAllViewsInLayout();
+		requestLayout();
 	}
 	
 	/* (non-Javadoc)
@@ -302,8 +295,8 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	 */
 	@Override
 	public View getSelectedView() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Not supported");
+
 	}
 
 	/* (non-Javadoc)
@@ -311,7 +304,7 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	 */
 	@Override
 	public void setSelection(int position) {
-		// TODO Auto-generated method stub
-		
+		throw new UnsupportedOperationException("Not supported");
+
 	}
 }
