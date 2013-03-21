@@ -10,7 +10,8 @@
     <application
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme"
+        android:allowBackup="false" >
         <activity
             android:name=".AntipodalWallSample"
             android:label="@string/title_activity_antipodal_wall_sample" >
