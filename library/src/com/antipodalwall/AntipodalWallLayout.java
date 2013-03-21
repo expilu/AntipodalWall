@@ -2,14 +2,18 @@ package com.antipodalwall;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.provider.SyncStateContract.Columns;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 
-public class AntipodalWallLayout extends ViewGroup {
+public class AntipodalWallLayout extends AdapterView<Adapter> {
 
+	//================================================================================
+	// Definitions
+    //================================================================================
+	
 	/**
 	 * The number of columns to distribute views as stablished with the
 	 * android:columnCount property in XML
@@ -50,6 +54,11 @@ public class AntipodalWallLayout extends ViewGroup {
 	 */
 	private int mVerticalSpacing;
 
+	
+	//================================================================================
+	// Constructor
+	//================================================================================
+	
 	public AntipodalWallLayout(Context context, AttributeSet attrs) {
 		super(context, attrs);
 
@@ -86,6 +95,10 @@ public class AntipodalWallLayout extends ViewGroup {
 		awakenScrollBars(); // TODO Scrollbars should be shown only if enabled
 							// in XML attributes
 	}
+	
+	//================================================================================
+	// API Events
+    //================================================================================
 
 	/*
 	 * (non-Javadoc)
@@ -216,6 +229,10 @@ public class AntipodalWallLayout extends ViewGroup {
 
 		return true;
 	}
+	
+	//================================================================================
+	// Private functions
+    //================================================================================
 
 	/**
 	 * Finds a column according to the specification passed (right now only
@@ -255,5 +272,46 @@ public class AntipodalWallLayout extends ViewGroup {
 		mPaddingT = padding;
 		mPaddingR = padding;
 		mPaddingB = padding;
+	}
+	
+	
+	//================================================================================
+	// Getters & Setters
+    //================================================================================
+	
+	/* (non-Javadoc)
+	 * @see android.widget.AdapterView#getAdapter()
+	 */
+	@Override
+	public Adapter getAdapter() {
+		// TODO Auto-generated method stub
+		return null;
+	}	
+
+	/* (non-Javadoc)
+	 * @see android.widget.AdapterView#setAdapter(android.widget.Adapter)
+	 */
+	@Override
+	public void setAdapter(Adapter adapter) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/* (non-Javadoc)
+	 * @see android.widget.AdapterView#getSelectedView()
+	 */
+	@Override
+	public View getSelectedView() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see android.widget.AdapterView#setSelection(int)
+	 */
+	@Override
+	public void setSelection(int position) {
+		// TODO Auto-generated method stub
+		
 	}
 }
