@@ -6,20 +6,19 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-
 public class AntipodalWallLayout extends ViewGroup {
 	
-	private int columns;
-	private float columnWidth = 0;
-	private int paddingL;
-	private int paddingT;
-	private int paddingR;
-	private int paddingB;
-	int parentHeight = 0;
-	private int finalHeight = 0;
-	private int y_move = 0;
-	private int horizontalSpacing;
-	private int verticalSpacing;
+	private int mColumns;
+	private float mColumnWidth = 0;
+	private int mPaddingL;
+	private int mPaddingT;
+	private int mPaddingR;
+	private int mPaddingB;
+	int mParentHeight = 0;
+	private int mFinalHeight = 0;
+	private int mYMove = 0;
+	private int mHorizontalSpacing;
+	private int mVerticalSpacing;
 
 	public AntipodalWallLayout(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -31,19 +30,19 @@ public class AntipodalWallLayout extends ViewGroup {
 		//- scrollbars
 		initializeScrollbars(a);
 		//- number of columns
-		this.columns = a.getInt(R.styleable.AntipodalWallAttrs_android_columnCount, 1);
-        if(this.columns < 1)
-        	this.columns = 1;
+		mColumns = a.getInt(R.styleable.AntipodalWallAttrs_android_columnCount, 1);
+        if(mColumns < 1)
+        	mColumns = 1;
         //- general padding (padding was not being handled correctly)
         setGeneralPadding(a.getDimensionPixelSize(R.styleable.AntipodalWallAttrs_android_padding, 0));
         //- specific paddings
-        this.paddingL = a.getDimensionPixelSize(R.styleable.AntipodalWallAttrs_android_paddingLeft, 0);
-        this.paddingT = a.getDimensionPixelSize(R.styleable.AntipodalWallAttrs_android_paddingTop, 0);
-        this.paddingR = a.getDimensionPixelSize(R.styleable.AntipodalWallAttrs_android_paddingRight, 0);
-        this.paddingB = a.getDimensionPixelSize(R.styleable.AntipodalWallAttrs_android_paddingBottom, 0);
+        mPaddingL = a.getDimensionPixelSize(R.styleable.AntipodalWallAttrs_android_paddingLeft, 0);
+        mPaddingT = a.getDimensionPixelSize(R.styleable.AntipodalWallAttrs_android_paddingTop, 0);
+        mPaddingR = a.getDimensionPixelSize(R.styleable.AntipodalWallAttrs_android_paddingRight, 0);
+        mPaddingB = a.getDimensionPixelSize(R.styleable.AntipodalWallAttrs_android_paddingBottom, 0);
         //- spacing
-        this.horizontalSpacing = a.getDimensionPixelSize(R.styleable.AntipodalWallAttrs_android_horizontalSpacing, 0);
-        this.verticalSpacing = a.getDimensionPixelSize(R.styleable.AntipodalWallAttrs_android_verticalSpacing, 0);
+        mHorizontalSpacing = a.getDimensionPixelSize(R.styleable.AntipodalWallAttrs_android_horizontalSpacing, 0);
+        mVerticalSpacing = a.getDimensionPixelSize(R.styleable.AntipodalWallAttrs_android_verticalSpacing, 0);
         
         a.recycle();
 	}
@@ -51,19 +50,19 @@ public class AntipodalWallLayout extends ViewGroup {
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
-		int parentUsableWidth = parentWidth - this.paddingL - this.paddingR; //Usable width for children once padding is removed
+		int parentUsableWidth = parentWidth - mPaddingL - mPaddingR; //Usable width for children once padding is removed
 		if(parentUsableWidth < 0)
 			parentUsableWidth = 0;
-		this.parentHeight = MeasureSpec.getSize(heightMeasureSpec);
-		int parentUsableHeight = this.parentHeight - this.paddingT - this.paddingB; //Usable height for children once padding is removed
+		mParentHeight = MeasureSpec.getSize(heightMeasureSpec);
+		int parentUsableHeight = mParentHeight - mPaddingT - mPaddingB; //Usable height for children once padding is removed
 		if(parentUsableHeight < 0)
 			parentUsableHeight = 0;
-		this.columnWidth = parentUsableWidth / this.columns - ((this.horizontalSpacing * (this.columns - 1)) / this.columns);
+		mColumnWidth = parentUsableWidth / mColumns - ((mHorizontalSpacing * (mColumns - 1)) / mColumns);
 		
 		for(int i=0;i<getChildCount();i++) {
 			View child = getChildAt(i);
 			 //force the width of the children to be that of the columns...
-			int childWidthSpec = MeasureSpec.makeMeasureSpec((int)this.columnWidth, MeasureSpec.EXACTLY);
+			int childWidthSpec = MeasureSpec.makeMeasureSpec((int)mColumnWidth, MeasureSpec.EXACTLY);
 			 //... but let them grow vertically
 			int childHeightSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
 			child.measure(childWidthSpec, childHeightSpec);
@@ -71,33 +70,33 @@ public class AntipodalWallLayout extends ViewGroup {
 		
 		//get the final heigth of the viewgroup. it will be that of the higher
 		//column once all chidren is in place
-		int[] columns_t = new int[this.columns];
+		int[] columns_t = new int[mColumns];
 		for(int i=0;i<getChildCount();i++) {
 			int column = findLowerColumn(columns_t);
 			columns_t[column] += getChildAt(i).getMeasuredHeight();
 		}
-		this.finalHeight = columns_t[findHigherColumn(columns_t)];
+		mFinalHeight = columns_t[findHigherColumn(columns_t)];
 		
-		setMeasuredDimension(parentWidth, this.finalHeight);
+		setMeasuredDimension(parentWidth, mFinalHeight);
 	}
 
 	@Override
 	protected void onLayout(boolean changed, int l, int t, int r, int b) {
-		int[] columns_t = new int[this.columns];
+		int[] columns_t = new int[mColumns];
 		
 		for(int i=0;i<getChildCount();i++) {
 			View view = getChildAt(i);
 			//We place each child  in the column that has the less height to the moment
 			int column = findLowerColumn(columns_t);
-			int left = this.paddingL + l + (int)(this.columnWidth * column) + (this.horizontalSpacing * column);
-			view.layout(left, columns_t[column] + this.paddingT, left + view.getMeasuredWidth(), columns_t[column] + view.getMeasuredHeight() + this.paddingT);
-			columns_t[column] = columns_t[column] + view.getMeasuredHeight() + this.verticalSpacing;
+			int left = mPaddingL + l + (int)(mColumnWidth * column) + (mHorizontalSpacing * column);
+			view.layout(left, columns_t[column] + mPaddingT, left + view.getMeasuredWidth(), columns_t[column] + view.getMeasuredHeight() + mPaddingT);
+			columns_t[column] = columns_t[column] + view.getMeasuredHeight() + mVerticalSpacing;
 		}
 	}
 	
 	@Override
 	protected int computeVerticalScrollExtent() {
-	    return this.parentHeight - (this.finalHeight - this.parentHeight);
+	    return mParentHeight - (mFinalHeight - mParentHeight);
 	}
 
 	@Override
@@ -107,7 +106,7 @@ public class AntipodalWallLayout extends ViewGroup {
 
 	@Override
 	protected int computeVerticalScrollRange() {
-	    return this.finalHeight;
+	    return mFinalHeight;
 	}
 	
 	@Override
@@ -119,10 +118,10 @@ public class AntipodalWallLayout extends ViewGroup {
 			//handle vertical scrolling
 			if(isVerticalScrollBarEnabled()) {
 				if(event.getHistorySize() > 0) {
-					this.y_move = - (int)(event.getY() - event.getHistoricalY(event.getHistorySize() - 1));
-					int result_scroll = getScrollY() + this.y_move;
-					if(result_scroll >= 0 && result_scroll <= this.finalHeight - this.parentHeight)
-						scrollBy(0, this.y_move);
+					mYMove = - (int)(event.getY() - event.getHistoricalY(event.getHistorySize() - 1));
+					int result_scroll = getScrollY() + mYMove;
+					if(result_scroll >= 0 && result_scroll <= mFinalHeight - mParentHeight)
+						scrollBy(0, mYMove);
 		    	}
 			}
 			break;
@@ -156,9 +155,9 @@ public class AntipodalWallLayout extends ViewGroup {
 	}
 	
 	private void setGeneralPadding(int padding) {
-		this.paddingL = padding;
-		this.paddingT = padding;
-		this.paddingR = padding;
-		this.paddingB = padding;
+		mPaddingL = padding;
+		mPaddingT = padding;
+		mPaddingR = padding;
+		mPaddingB = padding;
 	}
 }
