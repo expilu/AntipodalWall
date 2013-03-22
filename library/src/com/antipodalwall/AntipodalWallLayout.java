@@ -2,7 +2,6 @@ package com.antipodalwall;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.database.DataSetObserver;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -10,6 +9,8 @@ import android.widget.Adapter;
 import android.widget.AdapterView;
 
 public class AntipodalWallLayout extends AdapterView<Adapter> {
+	
+	private static final int TOUCH_SCROLL_THRESHOLD = 10;
 
 	//================================================================================
 	// Definitions
@@ -24,26 +25,9 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	 * The width of a column after calculating and dividing the usable width
 	 * between columns
 	 */
-	private float mColumnWidth = 0;
-	/** Left padding as stablished with android:paddingLeft in the XML layout */
-	private int mPaddingL;
-	/** Top padding as stablished with android:paddingTop in the XML layout */
-	private int mPaddingT;
-	/** Right padding as stablished with android:paddingRight in the XML layout */
-	private int mPaddingR;
-	/**
-	 * Bottom padding as stablished with android:paddingBottom in the XML layout
-	 */
-	@SuppressWarnings("unused")
-	// TODO Not used right now, but may be useful in the future
-	private int mPaddingB;
+	private float mColumnWidth = 0;	
 	/** The total visible height assigned to the layout */
 	int mLayoutHeight = 0;
-	/**
-	 * The final total height of the layout, visible or not, after adding
-	 * children. All content scrolled or not.
-	 */
-	private int mFinalHeight = 0;
 	/**
 	 * Horizontal space between chldren as stablished with
 	 * android:horizontalSpacing in the XML layout
@@ -59,14 +43,16 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	/** Layout params for children views*/
 	private LayoutParams mChildLayoutParams;
 	
+	private int[] mColumnsHeights;
+	private int[] mAssignedColumns;
+	private int[] mItemsTops;
+	
 	//================================================================================
 	// Constructor
 	//================================================================================
 	
 	public AntipodalWallLayout(Context context, AttributeSet attrs) {
 		super(context, attrs);
-
-		setWillNotDraw(false);
 
 		// Load the attrs from the stablished in the XML layout, if any
 		final TypedArray a = context.obtainStyledAttributes(attrs,
@@ -78,28 +64,16 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 				1);
 		if (mColumns < 1)
 			mColumns = 1; // the default is one column
-		// - general padding (padding was not being handled correctly)
-		setGeneralPadding(a.getDimensionPixelSize(
-				R.styleable.AntipodalWallAttrs_android_padding, 0));
-		// - specific paddings
-		mPaddingL = a.getDimensionPixelSize(
-				R.styleable.AntipodalWallAttrs_android_paddingLeft, 0);
-		mPaddingT = a.getDimensionPixelSize(
-				R.styleable.AntipodalWallAttrs_android_paddingTop, 0);
-		mPaddingR = a.getDimensionPixelSize(
-				R.styleable.AntipodalWallAttrs_android_paddingRight, 0);
-		mPaddingB = a.getDimensionPixelSize(
-				R.styleable.AntipodalWallAttrs_android_paddingBottom, 0);
 		// - spacing
 		mHorizontalSpacing = a.getDimensionPixelSize(
 				R.styleable.AntipodalWallAttrs_android_horizontalSpacing, 0);
 		mVerticalSpacing = a.getDimensionPixelSize(
 				R.styleable.AntipodalWallAttrs_android_verticalSpacing, 0);
-
-		awakenScrollBars(); // TODO Scrollbars should be shown only if enabled
-							// in XML attributes
+		a.recycle();		
 		
 		mChildLayoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		
+		mColumnsHeights = new int[mColumns];
 	}
 	
 	//================================================================================
@@ -115,24 +89,18 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		// Total layout width
 		int layoutWidth = MeasureSpec.getSize(widthMeasureSpec);
-		// Usable layout width for children once padding is removed
-		int layoutUsableWidth = layoutWidth - mPaddingL - mPaddingR;
-		if (layoutUsableWidth < 0)
-			layoutUsableWidth = 0;
 
 		// Total layout height
 		mLayoutHeight = MeasureSpec.getSize(heightMeasureSpec);
 
 		// Calculate width assigned to each column: the usable width divided by
 		// the number of columns, minus horizontal spacing
-		mColumnWidth = layoutUsableWidth / mColumns
-				- ((mHorizontalSpacing * (mColumns - 1)) / mColumns);
+		mColumnWidth = layoutWidth / mColumns - (((mColumns + 1) * mHorizontalSpacing) / mColumns);
 
-		mFinalHeight = mLayoutHeight;
-
-		setMeasuredDimension(layoutWidth, mFinalHeight);
+		setMeasuredDimension(layoutWidth, mLayoutHeight);
 	}
-
+	
+	private int mLastPosition = -1;
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -144,84 +112,59 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 		
 		if (mAdapter == null)
 	        return;
-
-		int[] columnsHeights = new int[mColumns];
-		for(int i = 0; i < mAdapter.getCount(); i++) {
-			View child = mAdapter.getView(i, null, null);
-			addViewInLayout(child, i, mChildLayoutParams);
+		
+		while(!checkAllColumsHigherThan(mColumnsHeights, mLayoutHeight)) {
+			int position = mLastPosition + 1;
+			View newChild = mAdapter.getView(mLastPosition + 1, null, null);
+			addViewInLayout(newChild, -1, mChildLayoutParams);
 			int childWidthSpec = MeasureSpec.makeMeasureSpec((int) mColumnWidth, MeasureSpec.EXACTLY);
 			int childHeightSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
-			child.measure(childWidthSpec, childHeightSpec);
-			
-			int column = findColumn(columnsHeights, ColumnSpec.LOWEST);
-			int left = mPaddingL + l + (int) (mColumnWidth * column) + (mHorizontalSpacing * column);
-			child.layout(left, columnsHeights[column] + mPaddingT,
-					left + child.getMeasuredWidth(), columnsHeights[column]
-							+ child.getMeasuredHeight() + mPaddingT);
-			columnsHeights[column] = columnsHeights[column]
-					+ child.getMeasuredHeight() + mVerticalSpacing;
+			newChild.measure(childWidthSpec, childHeightSpec);
+			int column = findColumn(mColumnsHeights, ColumnSpec.LOWEST);
+			mItemsTops[position] = mColumnsHeights[column];
+			mColumnsHeights[column] += newChild.getMeasuredHeight() + mVerticalSpacing;
+			mAssignedColumns[position] = column;			
+			mLastPosition = position;
 		}
-
-		mFinalHeight = columnsHeights[findColumn(columnsHeights,
-				ColumnSpec.HIGHEST)];
 		
+		for(int i = 0; i < getChildCount(); i++) {
+			View child = getChildAt(i);
+			int position = mLastPosition + (i - getChildCount()) + 1;
+			int column = mAssignedColumns[position];
+			int left = l + mHorizontalSpacing + (int) (mColumnWidth * column) + (mHorizontalSpacing * column);
+			int top = mItemsTops[position] + mVerticalSpacing + mScrollOffset;
+			int right = left + child.getMeasuredWidth();
+			int bottom = top + child.getMeasuredHeight();
+			child.layout(left, top, right, bottom);
+		}
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.view.View#computeVerticalScrollExtent()
-	 */
-	@Override
-	protected int computeVerticalScrollExtent() {
-		return mLayoutHeight - (mFinalHeight - mLayoutHeight);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.view.View#computeVerticalScrollOffset()
-	 */
-	@Override
-	protected int computeVerticalScrollOffset() {
-		return getScrollY();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.view.View#computeVerticalScrollRange()
-	 */
-	@Override
-	protected int computeVerticalScrollRange() {
-		return mFinalHeight;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see android.view.View#onTouchEvent(android.view.MotionEvent)
-	 */
+	
+	private int mFirstTouchY = 0;
+	private int mScrollChange = 0;
+	private int mScrollOffset = 0;
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		switch (event.getAction()) {
-		case MotionEvent.ACTION_MOVE:
-			// Handle vertical scrolling
-			// TODO only do this if scrolling is enabled in XML
-			if (isVerticalScrollBarEnabled()) {
-				if (event.getHistorySize() > 0) {
-					int yMove = -(int) (event.getY() - event
-							.getHistoricalY(event.getHistorySize() - 1));
-					int result_scroll = getScrollY() + yMove;
-					if (result_scroll >= 0
-							&& result_scroll <= mFinalHeight - mLayoutHeight)
-						scrollBy(0, yMove);
+		if (getChildCount() == 0) {
+	        return false;
+	    }
+	    switch (event.getAction()) {
+	    	case MotionEvent.ACTION_DOWN:
+	    		mFirstTouchY = (int)event.getY();
+	    		break;
+	        case MotionEvent.ACTION_MOVE:
+	        	if (isVerticalScrollBarEnabled()) {
+	        		mScrollChange = (int)event.getY() - mFirstTouchY;
+	        		if (Math.abs(mScrollChange) >= TOUCH_SCROLL_THRESHOLD) {
+	        			mScrollOffset += mScrollChange;
+						requestLayout();
+	        		}
 				}
-			}
-			break;
-		}
+				break;
+	        default:
+	            break;
+	    }
+	    return true;
 
-		return true;
 	}
 	
 	//================================================================================
@@ -260,12 +203,12 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 		}
 		return column;
 	}
-
-	private void setGeneralPadding(int padding) {
-		mPaddingL = padding;
-		mPaddingT = padding;
-		mPaddingR = padding;
-		mPaddingB = padding;
+	
+	private boolean checkAllColumsHigherThan(int[] columns, int height) {
+		for (int i = 0; i < columns.length; i++) 
+			if(columns[i] < height)
+				return false;
+		return true;
 	}
 	
 	//================================================================================
@@ -286,6 +229,8 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	@Override
 	public void setAdapter(Adapter adapter) {
 		mAdapter = adapter;
+		mAssignedColumns = new int[mAdapter.getCount()];
+		mItemsTops = new int[mAdapter.getCount()];
 		removeAllViewsInLayout();
 		requestLayout();
 	}

@@ -4,6 +4,5 @@
     android:layout_height="wrap_content"
     android:scrollbars="vertical"
     android:columnCount="2"
-    android:padding="2dp"
     android:verticalSpacing="2dp"
     android:horizontalSpacing="2dp" />
