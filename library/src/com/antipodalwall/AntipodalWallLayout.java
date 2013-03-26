@@ -45,6 +45,7 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	private int[] mColumnsHeights;
 	private int[] mAssignedColumns;
 	private int[] mItemsTops;
+	private boolean mBottomReached;
 	
 	private int mFirstTouchY = 0;
 	private int mScrollChange = 0;
@@ -77,6 +78,8 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 		mChildLayoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		
 		mColumnsHeights = new int[mColumns];
+		
+		mBottomReached = false;
 	}
 	
 	//================================================================================
@@ -116,9 +119,10 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 		if (mAdapter == null)
 	        return;
 		
-		while(!checkAllColumsHigherThan(mColumnsHeights, mLayoutHeight + mScrollOffset)) {
+		mBottomReached = mLastPosition + 1 >= mAdapter.getCount();		
+		while(!mBottomReached && !checkAllColumsHigherThan(mColumnsHeights, mLayoutHeight + mScrollOffset)) {
 			int position = mLastPosition + 1;
-			View newChild = mAdapter.getView(mLastPosition + 1, null, null);
+			View newChild = mAdapter.getView(position, null, null);
 			addViewInLayout(newChild, -1, mChildLayoutParams);
 			int childWidthSpec = MeasureSpec.makeMeasureSpec((int) mColumnWidth, MeasureSpec.EXACTLY);
 			int childHeightSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
@@ -160,6 +164,11 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	        			mScrollOffset += mScrollChange;
 	        			if(mScrollOffset < 0) // Scrolling top limit
 	        				mScrollOffset = 0;
+	        			else if(mBottomReached) {
+	        				int totalHeight = mColumnsHeights[findColumn(mColumnsHeights, ColumnSpec.HIGHEST)];
+	        				if(mScrollOffset + mLayoutHeight > totalHeight)
+	        					mScrollOffset = totalHeight - mLayoutHeight + mVerticalSpacing;
+	        			}
 						requestLayout();
 	        		}
 				}
