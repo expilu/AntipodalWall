@@ -42,10 +42,13 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	private Adapter mAdapter;
 	/** Layout params for children views*/
 	private LayoutParams mChildLayoutParams;
-	
 	private int[] mColumnsHeights;
 	private int[] mAssignedColumns;
 	private int[] mItemsTops;
+	
+	private int mFirstTouchY = 0;
+	private int mScrollChange = 0;
+	private int mScrollOffset = 0;
 	
 	//================================================================================
 	// Constructor
@@ -132,16 +135,14 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 			int position = mLastPosition + (i - getChildCount()) + 1;
 			int column = mAssignedColumns[position];
 			int left = l + mHorizontalSpacing + (int) (mColumnWidth * column) + (mHorizontalSpacing * column);
-			int top = mItemsTops[position] + mVerticalSpacing + mScrollOffset;
+			int top = mItemsTops[position] + mVerticalSpacing - mScrollOffset;
 			int right = left + child.getMeasuredWidth();
 			int bottom = top + child.getMeasuredHeight();
 			child.layout(left, top, right, bottom);
 		}
 	}
 	
-	private int mFirstTouchY = 0;
-	private int mScrollChange = 0;
-	private int mScrollOffset = 0;
+	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		if (getChildCount() == 0) {
@@ -153,11 +154,11 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	    		break;
 	        case MotionEvent.ACTION_MOVE:
 	        	if (isVerticalScrollBarEnabled()) {
-	        		mScrollChange = (int)event.getY() - mFirstTouchY;
+	        		mScrollChange = mFirstTouchY - (int)event.getY();
 	        		if (Math.abs(mScrollChange) >= ViewConfiguration.get(getContext()).getScaledTouchSlop()) {
-	        			mFirstTouchY += mScrollChange;
+	        			mFirstTouchY -= mScrollChange;
 	        			mScrollOffset += mScrollChange;
-	        			if(mScrollOffset > 0)
+	        			if(mScrollOffset < 0) // Scrolling top limit
 	        				mScrollOffset = 0;
 	        			Log.i("MOVEMENT", String.valueOf(mScrollChange));
 						requestLayout();
