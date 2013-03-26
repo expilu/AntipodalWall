@@ -116,7 +116,7 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 		if (mAdapter == null)
 	        return;
 		
-		while(!checkAllColumsHigherThan(mColumnsHeights, mLayoutHeight)) {
+		while(!checkAllColumsHigherThan(mColumnsHeights, mLayoutHeight + mScrollOffset)) {
 			int position = mLastPosition + 1;
 			View newChild = mAdapter.getView(mLastPosition + 1, null, null);
 			addViewInLayout(newChild, -1, mChildLayoutParams);
@@ -160,7 +160,6 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	        			mScrollOffset += mScrollChange;
 	        			if(mScrollOffset < 0) // Scrolling top limit
 	        				mScrollOffset = 0;
-	        			Log.i("MOVEMENT", String.valueOf(mScrollChange));
 						requestLayout();
 	        		}
 				}

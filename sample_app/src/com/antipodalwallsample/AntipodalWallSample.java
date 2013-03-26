@@ -21,7 +21,7 @@ public class AntipodalWallSample extends Activity {
 		AntipodalWallLayout antipodalWall = (AntipodalWallLayout) findViewById(R.id.antipodal_wall);
 		List<String> txts = new ArrayList<String>();
 		SecureRandom random = new SecureRandom();
-		for (int i = 0; i < 30; i++)
+		for (int i = 0; i < 100; i++)
 			txts.add("View " + String.valueOf(i + 1) + " " + (new BigInteger(random.nextInt(1000), random)).toString(32));
 		antipodalWall.setAdapter(new ArrayAdapter<String>(this, R.layout.brick, R.id.text, txts));
 	}
