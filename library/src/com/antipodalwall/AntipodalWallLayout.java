@@ -3,15 +3,15 @@ package com.antipodalwall;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 
 public class AntipodalWallLayout extends AdapterView<Adapter> {
 	
-	private static final int TOUCH_SCROLL_THRESHOLD = 10;
-
 	//================================================================================
 	// Definitions
     //================================================================================
@@ -147,15 +147,17 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 		if (getChildCount() == 0) {
 	        return false;
 	    }
-	    switch (event.getAction()) {
+	    switch (event.getAction() & MotionEvent.ACTION_MASK) {
 	    	case MotionEvent.ACTION_DOWN:
 	    		mFirstTouchY = (int)event.getY();
 	    		break;
 	        case MotionEvent.ACTION_MOVE:
 	        	if (isVerticalScrollBarEnabled()) {
 	        		mScrollChange = (int)event.getY() - mFirstTouchY;
-	        		if (Math.abs(mScrollChange) >= TOUCH_SCROLL_THRESHOLD) {
+	        		if (Math.abs(mScrollChange) >= ViewConfiguration.get(getContext()).getScaledTouchSlop()) {
+	        			mFirstTouchY += mScrollChange;
 	        			mScrollOffset += mScrollChange;
+	        			Log.i("MOVEMENT", String.valueOf(mScrollChange));
 						requestLayout();
 	        		}
 				}
