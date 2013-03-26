@@ -157,6 +157,8 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	        		if (Math.abs(mScrollChange) >= ViewConfiguration.get(getContext()).getScaledTouchSlop()) {
 	        			mFirstTouchY += mScrollChange;
 	        			mScrollOffset += mScrollChange;
+	        			if(mScrollOffset > 0)
+	        				mScrollOffset = 0;
 	        			Log.i("MOVEMENT", String.valueOf(mScrollChange));
 						requestLayout();
 	        		}
@@ -166,7 +168,6 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	            break;
 	    }
 	    return true;
-
 	}
 	
 	//================================================================================
