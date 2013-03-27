@@ -6,6 +6,7 @@ import java.util.List;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -131,6 +132,9 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	        return;
 		
 		checkAndSetViewStates();
+		
+		int freeSpacePosition = findFreeSpacePosition();
+		Log.i("test", String.valueOf(freeSpacePosition));
 		
 		while(!mBottomReached && !checkAllColumsHigherThan(mColumnsHeights, mLayoutHeight + mScrollOffset)) {
 			int position = mLastPosition + 1;
@@ -290,6 +294,31 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 				i--;
 			}
 		}
+	}
+	
+	private int findFreeSpacePosition() {
+		//TODO this is wrong
+		int viewPortTop = mScrollOffset;
+		int viewPortBottom = mScrollOffset + mLayoutHeight;		
+		
+		int belowTop = 0;
+		int overBottom = 0;
+		for(int i = 0; i < getChildCount(); i++) {
+			View view = getChildAt(i);
+			int viewTop = view.getTop() + mScrollOffset - mVerticalSpacing;
+			int viewBottom = view.getBottom() + mScrollOffset;
+			if(viewTop > viewPortTop)
+				belowTop++;
+			if(viewBottom > viewPortBottom)
+				overBottom++;
+		}
+		
+		if(belowTop == getChildCount())
+			return FreeSpacePosition.TOP;
+		else if(overBottom == getChildCount())
+			return FreeSpacePosition.BOTTOM;
+		else
+			return FreeSpacePosition.NONE;
 	}
 	
 	//================================================================================
