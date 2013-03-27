@@ -14,17 +14,10 @@ import android.widget.TextView;
 public class BreedAdapter extends ArrayAdapter<Breed> {
 	
 	private final int mViewResourceId;
-	private int mCount;
 
 	public BreedAdapter(Context context, int viewResourceId, List<Breed> breeds) {
 		super(context, viewResourceId, breeds);
 		mViewResourceId = viewResourceId;
-		mCount = breeds.size();
-	}
-	
-	@Override
-	public int getCount() {
-		return mCount;
 	}
 	
 	@Override
