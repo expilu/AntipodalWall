@@ -15,6 +15,8 @@ Beta!
 =====
 The layout is still in an early stage of development. Specifically it needs work in memory handling for scrolling (view recycling), so right now it is not smooth with a lot of children and/or images.
 
+There is ongoing work to add adapter support and view recycling in the [change-to-adapter-view][2] branch
+
 How to use
 ==========
 Assuming you’re using the Eclipse Development Environment with the ADT plugin version 0.9.7
@@ -69,3 +71,4 @@ License
     limitations under the License.
     
 [1]: http://expilu.github.com/AntipodalWall/
+[2]: https://github.com/expilu/AntipodalWall/tree/change-to-adapter-view
