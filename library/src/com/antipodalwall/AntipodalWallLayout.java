@@ -52,8 +52,7 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	private int mFirstTouchY = 0;
 	private int mScrollChange = 0;
 	private int mScrollOffset = 0;
-	private int[] mViewStates;
-	
+	List<Integer> mViewStates;
 	List<Integer> mChildAdapterPositions;
 	
 	//================================================================================
@@ -62,6 +61,8 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	
 	public AntipodalWallLayout(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		
+		setWillNotDraw(true);
 
 		// Load the attrs from the stablished in the XML layout, if any
 		final TypedArray a = context.obtainStyledAttributes(attrs,
@@ -86,7 +87,7 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 		
 		mBottomReached = false;
 		
-		mViewStates = new int[0];
+		mViewStates = new ArrayList<Integer>();
 		
 		mChildAdapterPositions = new ArrayList<Integer>();
 	}
@@ -137,7 +138,7 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 				mBottomReached = true;
 				break;
 			}
-			Integer convertibleChildIndex = pickConvertableChildIndex();
+			Integer convertibleChildIndex = pickConvertibleChildIndex();
 			View view = mAdapter.getView(position, convertibleChildIndex != null ? getChildAt(convertibleChildIndex) : null, null);
 			if(convertibleChildIndex == null) {
 				addViewInLayout(view, -1, mChildLayoutParams, true);
@@ -168,6 +169,8 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 			int bottom = top + child.getMeasuredHeight();
 			child.layout(left, top, right, bottom);
 		}
+		
+		invalidate();
 	}
 	
 	@Override
@@ -252,26 +255,26 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	private boolean isViewVisible(View view) {
 		int layoutTop = mScrollOffset;
 		int layoutBottom = mScrollOffset + mLayoutHeight;
-		int viewTop = view.getTop() + mScrollOffset;
+		int viewTop = view.getTop() + mScrollOffset - mVerticalSpacing;
 		int viewBottom = view.getBottom() + mScrollOffset;
 		
 		return !(viewBottom < layoutTop || viewTop > layoutBottom);
 	}
 	
 	private void checkAndSetViewStates() {
-		mViewStates = new int[getChildCount()];
+		mViewStates = new ArrayList<Integer>();
 		for(int i = 0; i < getChildCount(); i++) {
 			if(isViewVisible(getChildAt(i)))
-				mViewStates[i] = ViewState.VISIBLE;
+				mViewStates.add(ViewState.VISIBLE);
 			else
-				mViewStates[i] = ViewState.OUT_OF_VIEW;
+				mViewStates.add(ViewState.OUT_OF_VIEW);
 		}
 	}
 	
-	private Integer pickConvertableChildIndex() {
-		for(int i = 0; i < mViewStates.length; i++) {
-			if(mViewStates[i] == ViewState.OUT_OF_VIEW) {
-				mViewStates[i] = ViewState.CONVERTED;
+	private Integer pickConvertibleChildIndex() {
+		for(int i = 0; i < mViewStates.size(); i++) {
+			if(mViewStates.get(i) == ViewState.OUT_OF_VIEW) {
+				mViewStates.set(i, ViewState.CONVERTED);
 				return i;
 			}
 		}
@@ -279,10 +282,12 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	}
 	
 	private void removeNotVisibleChildren() {
-		for(int i = 0; i < mViewStates.length; i++) {
-			if(mViewStates[i] == ViewState.OUT_OF_VIEW) {
-				mChildAdapterPositions.remove(i);
-				removeViewInLayout(getChildAt(i));				
+		for(int i = 0; i < mViewStates.size(); i++) {
+			if(mViewStates.get(i) == ViewState.OUT_OF_VIEW) {
+				mViewStates.remove(i);
+				mChildAdapterPositions.remove(i);				
+				removeViewInLayout(getChildAt(i));
+				i--;
 			}
 		}
 	}
@@ -304,9 +309,15 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	 */
 	@Override
 	public void setAdapter(Adapter adapter) {
+		// TODO unify this in a method with the code in the constructor
 		mAdapter = adapter;
 		mAssignedColumns = new int[mAdapter.getCount()];
 		mItemsTops = new int[mAdapter.getCount()];
+		mColumnsHeights = new int[mColumns];		
+		mBottomReached = false;		
+		mViewStates = new ArrayList<Integer>();		
+		mChildAdapterPositions = new ArrayList<Integer>();
+		
 		removeAllViewsInLayout();
 		requestLayout();
 	}
