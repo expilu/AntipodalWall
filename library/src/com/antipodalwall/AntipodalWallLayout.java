@@ -253,12 +253,12 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	}
 	
 	private boolean isViewVisible(View view) {
-		int layoutTop = mScrollOffset;
-		int layoutBottom = mScrollOffset + mLayoutHeight;
+		int viewPortTop = mScrollOffset;
+		int viewPortBottom = mScrollOffset + mLayoutHeight;
 		int viewTop = view.getTop() + mScrollOffset - mVerticalSpacing;
 		int viewBottom = view.getBottom() + mScrollOffset;
 		
-		return !(viewBottom < layoutTop || viewTop > layoutBottom);
+		return !(viewBottom < viewPortTop || viewTop > viewPortBottom);
 	}
 	
 	private void checkAndSetViewStates() {
