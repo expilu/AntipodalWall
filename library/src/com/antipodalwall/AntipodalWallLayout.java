@@ -1,9 +1,11 @@
 package com.antipodalwall;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -50,6 +52,9 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	private int mFirstTouchY = 0;
 	private int mScrollChange = 0;
 	private int mScrollOffset = 0;
+	private int[] mViewStates;
+	
+	List<Integer> mChildAdapterPositions;
 	
 	//================================================================================
 	// Constructor
@@ -80,6 +85,10 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 		mColumnsHeights = new int[mColumns];
 		
 		mBottomReached = false;
+		
+		mViewStates = new int[0];
+		
+		mChildAdapterPositions = new ArrayList<Integer>();
 	}
 	
 	//================================================================================
@@ -107,6 +116,7 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	}
 	
 	private int mLastPosition = -1;
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -119,24 +129,38 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 		if (mAdapter == null)
 	        return;
 		
-		mBottomReached = mLastPosition + 1 >= mAdapter.getCount();		
+		checkAndSetViewStates();
+		
 		while(!mBottomReached && !checkAllColumsHigherThan(mColumnsHeights, mLayoutHeight + mScrollOffset)) {
 			int position = mLastPosition + 1;
-			View newChild = mAdapter.getView(position, null, null);
-			addViewInLayout(newChild, -1, mChildLayoutParams);
+			if(position  >= mAdapter.getCount()) {
+				mBottomReached = true;
+				break;
+			}
+			Integer convertibleChildIndex = pickConvertableChildIndex();
+			View view = mAdapter.getView(position, convertibleChildIndex != null ? getChildAt(convertibleChildIndex) : null, null);
+			if(convertibleChildIndex == null) {
+				addViewInLayout(view, -1, mChildLayoutParams, true);
+				mChildAdapterPositions.add(position);
+			} else {
+				mChildAdapterPositions.set(convertibleChildIndex, position);
+			}
+			
 			int childWidthSpec = MeasureSpec.makeMeasureSpec((int) mColumnWidth, MeasureSpec.EXACTLY);
 			int childHeightSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
-			newChild.measure(childWidthSpec, childHeightSpec);
+			view.measure(childWidthSpec, childHeightSpec);
 			int column = findColumn(mColumnsHeights, ColumnSpec.LOWEST);
 			mItemsTops[position] = mColumnsHeights[column];
-			mColumnsHeights[column] += newChild.getMeasuredHeight() + mVerticalSpacing;
+			mColumnsHeights[column] += view.getMeasuredHeight() + mVerticalSpacing;
 			mAssignedColumns[position] = column;			
 			mLastPosition = position;
 		}
 		
+		removeNotVisibleChildren();
+		
 		for(int i = 0; i < getChildCount(); i++) {
 			View child = getChildAt(i);
-			int position = mLastPosition + (i - getChildCount()) + 1;
+			int position = mChildAdapterPositions.get(i);
 			int column = mAssignedColumns[position];
 			int left = l + mHorizontalSpacing + (int) (mColumnWidth * column) + (mHorizontalSpacing * column);
 			int top = mItemsTops[position] + mVerticalSpacing - mScrollOffset;
@@ -145,7 +169,6 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 			child.layout(left, top, right, bottom);
 		}
 	}
-	
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
@@ -157,6 +180,9 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	    		mFirstTouchY = (int)event.getY();
 	    		break;
 	        case MotionEvent.ACTION_MOVE:
+	        	int totalHeight = mColumnsHeights[findColumn(mColumnsHeights, ColumnSpec.HIGHEST)];
+	        	if(totalHeight <= mLayoutHeight)
+	        		return false; // No sense scrolling if the list is smaller than the screen size
 	        	if (isVerticalScrollBarEnabled()) {
 	        		mScrollChange = mFirstTouchY - (int)event.getY();
 	        		if (Math.abs(mScrollChange) >= ViewConfiguration.get(getContext()).getScaledTouchSlop()) {
@@ -165,11 +191,11 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	        			if(mScrollOffset < 0) // Scrolling top limit
 	        				mScrollOffset = 0;
 	        			else if(mBottomReached) {
-	        				int totalHeight = mColumnsHeights[findColumn(mColumnsHeights, ColumnSpec.HIGHEST)];
+	        				totalHeight = mColumnsHeights[findColumn(mColumnsHeights, ColumnSpec.HIGHEST)];
 	        				if(mScrollOffset + mLayoutHeight > totalHeight)
 	        					mScrollOffset = totalHeight - mLayoutHeight + mVerticalSpacing;
 	        			}
-						requestLayout();
+	        			requestLayout();
 	        		}
 				}
 				break;
@@ -221,6 +247,44 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 			if(columns[i] < height)
 				return false;
 		return true;
+	}
+	
+	private boolean isViewVisible(View view) {
+		int layoutTop = mScrollOffset;
+		int layoutBottom = mScrollOffset + mLayoutHeight;
+		int viewTop = view.getTop() + mScrollOffset;
+		int viewBottom = view.getBottom() + mScrollOffset;
+		
+		return !(viewBottom < layoutTop || viewTop > layoutBottom);
+	}
+	
+	private void checkAndSetViewStates() {
+		mViewStates = new int[getChildCount()];
+		for(int i = 0; i < getChildCount(); i++) {
+			if(isViewVisible(getChildAt(i)))
+				mViewStates[i] = ViewState.VISIBLE;
+			else
+				mViewStates[i] = ViewState.OUT_OF_VIEW;
+		}
+	}
+	
+	private Integer pickConvertableChildIndex() {
+		for(int i = 0; i < mViewStates.length; i++) {
+			if(mViewStates[i] == ViewState.OUT_OF_VIEW) {
+				mViewStates[i] = ViewState.CONVERTED;
+				return i;
+			}
+		}
+		return null;
+	}
+	
+	private void removeNotVisibleChildren() {
+		for(int i = 0; i < mViewStates.length; i++) {
+			if(mViewStates[i] == ViewState.OUT_OF_VIEW) {
+				mChildAdapterPositions.remove(i);
+				removeViewInLayout(getChildAt(i));				
+			}
+		}
 	}
 	
 	//================================================================================
