@@ -1,15 +1,12 @@
 package com.antipodalwallsample;
 
-import java.math.BigInteger;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.antipodalwall.AntipodalWallLayout;
-
 import android.app.Activity;
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
+
+import com.antipodalwall.AntipodalWallLayout;
 
 public class AntipodalWallSample extends Activity {
 
@@ -17,12 +14,19 @@ public class AntipodalWallSample extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_antipodal_wall_sample);
+		
+		List<Breed> breeds = new ArrayList<Breed>();
+		breeds.add(new Breed("Akita Inu", R.drawable.dog_0));
+		breeds.add(new Breed("Perro de presa canario", R.drawable.dog_1));
+		breeds.add(new Breed("Papillon", R.drawable.dog_2));
+		breeds.add(new Breed("German shepherd", R.drawable.dog_3));
+		breeds.add(new Breed("American staffordshire terrier", R.drawable.dog_4));
+		breeds.add(new Breed("Belgian shepherd", R.drawable.dog_5));
+		breeds.add(new Breed("Blue lacy", R.drawable.dog_7));
+		breeds.add(new Breed("Boykin spaniel", R.drawable.dog_8));
+		breeds.add(new Breed("Bull terrier", R.drawable.dog_9));
 
-		AntipodalWallLayout antipodalWall = (AntipodalWallLayout) findViewById(R.id.antipodal_wall);
-		List<String> txts = new ArrayList<String>();
-		SecureRandom random = new SecureRandom();
-		for (int i = 0; i < 100; i++)
-			txts.add("View " + String.valueOf(i + 1) + " " + (new BigInteger(random.nextInt(1000), random)).toString(32));
-		antipodalWall.setAdapter(new ArrayAdapter<String>(this, R.layout.brick, R.id.text, txts));
+		AntipodalWallLayout antipodalWall = (AntipodalWallLayout) findViewById(R.id.antipodal_wall);		
+		antipodalWall.setAdapter(new BreedAdapter(this, R.layout.breed, breeds));
 	}
 }
