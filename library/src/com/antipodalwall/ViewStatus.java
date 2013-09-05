@@ -1,5 +1,5 @@
 package com.antipodalwall;
 
-public enum ViewState {
+public enum ViewStatus {
 	OUT_OF_VIEW, VISIBLE, CONVERTED
 }

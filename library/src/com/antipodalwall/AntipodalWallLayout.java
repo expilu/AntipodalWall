@@ -19,41 +19,51 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	// Definitions
     //================================================================================
 	
-	/**
-	 * The number of columns to distribute views as stablished with the
-	 * android:columnCount property in XML
-	 */
+	/** The number of columns to distribute views as established with the
+	 * android:columnCount property in XML */
 	private int mColumns;
-	/**
-	 * The width of a column after calculating and dividing the usable width
-	 * between columns
-	 */
-	private float mColumnWidth = 0;	
+	
+	/** The width of a column after calculating and dividing the usable width
+	 * between columns */
+	private float mColumnWidth = 0;
+	
 	/** The total visible height assigned to the layout */
 	int mLayoutHeight = 0;
-	/**
-	 * Horizontal space between chldren as stablished with
-	 * android:horizontalSpacing in the XML layout
-	 */
+	
+	/** Horizontal space between children as established with
+	 * android:horizontalSpacing in the XML layout */
 	private int mHorizontalSpacing;
-	/**
-	 * Horizontal space between chldren as stablished with
-	 * android:verticalSpacing in the XML layout
-	 */
+	
+	/** Vertical space between children as established with
+	 * android:verticalSpacing in the XML layout */
 	private int mVerticalSpacing;
+	
 	/** The Adapter to use */
 	private Adapter mAdapter;
-	/** Layout params for children views*/
+	
+	/** Layout parameters for children views*/
 	private LayoutParams mChildLayoutParams;
+	
+	/** This is used to store the current "height" (the sum of its items heights) of each column
+	 * This is useful to know to which column add the next item and other calculations */
 	private int[] mColumnsHeights;
+	
 	private int[] mAssignedColumns;
 	private int[] mItemsTops;
+	
+	/** Flag indicating whether all items have been added and we reached the "bottom" of the adapter */
 	private boolean mBottomReached;
 	
-	private int mFirstTouchY = 0;
+	/** Vertical position of the first touching place  at the beginning of a scroll */
+	private int mFirstTouchY = 0;	
+	/** How much did the scroll move... */
 	private int mScrollChange = 0;
+	/** Current scroll offset from the top */
 	private int mScrollOffset = 0;
-	List<ViewState> mViewStates;
+	
+	/** Current statuses of items views */
+	List<ViewStatus> mViewStatuses;
+	
 	List<Integer> mChildAdapterPositions;
 	
 	//================================================================================
@@ -65,7 +75,7 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 		
 		setWillNotDraw(true);
 
-		// Load the attrs from the stablished in the XML layout, if any
+		// Load the attrs from those established in the XML layout, if any
 		final TypedArray a = context.obtainStyledAttributes(attrs,
 				R.styleable.AntipodalWallAttrs);
 		// - scrollbars
@@ -74,7 +84,7 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 		mColumns = a.getInt(R.styleable.AntipodalWallAttrs_android_columnCount,
 				1);
 		if (mColumns < 1)
-			mColumns = 1; // the default is one column
+			mColumns = 1; // the default and minimum is one column
 		// - spacing
 		mHorizontalSpacing = a.getDimensionPixelSize(
 				R.styleable.AntipodalWallAttrs_android_horizontalSpacing, 0);
@@ -88,7 +98,7 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 		
 		mBottomReached = false;
 		
-		mViewStates = new ArrayList<ViewState>();
+		mViewStatuses = new ArrayList<ViewStatus>();
 		
 		mChildAdapterPositions = new ArrayList<Integer>();
 	}
@@ -266,19 +276,19 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	}
 	
 	private void checkAndSetViewStates() {
-		mViewStates = new ArrayList<ViewState>();
+		mViewStatuses = new ArrayList<ViewStatus>();
 		for(int i = 0; i < getChildCount(); i++) {
 			if(isViewVisible(getChildAt(i)))
-				mViewStates.add(ViewState.VISIBLE);
+				mViewStatuses.add(ViewStatus.VISIBLE);
 			else
-				mViewStates.add(ViewState.OUT_OF_VIEW);
+				mViewStatuses.add(ViewStatus.OUT_OF_VIEW);
 		}
 	}
 	
 	private Integer pickConvertibleChildIndex() {
-		for(int i = 0; i < mViewStates.size(); i++) {
-			if(mViewStates.get(i) == ViewState.OUT_OF_VIEW) {
-				mViewStates.set(i, ViewState.CONVERTED);
+		for(int i = 0; i < mViewStatuses.size(); i++) {
+			if(mViewStatuses.get(i) == ViewStatus.OUT_OF_VIEW) {
+				mViewStatuses.set(i, ViewStatus.CONVERTED);
 				return i;
 			}
 		}
@@ -286,9 +296,9 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	}
 	
 	private void removeNotVisibleChildren() {
-		for(int i = 0; i < mViewStates.size(); i++) {
-			if(mViewStates.get(i) == ViewState.OUT_OF_VIEW) {
-				mViewStates.remove(i);
+		for(int i = 0; i < mViewStatuses.size(); i++) {
+			if(mViewStatuses.get(i) == ViewStatus.OUT_OF_VIEW) {
+				mViewStatuses.remove(i);
 				mChildAdapterPositions.remove(i);				
 				removeViewInLayout(getChildAt(i));
 				i--;
@@ -344,7 +354,7 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 		mItemsTops = new int[mAdapter.getCount()];
 		mColumnsHeights = new int[mColumns];		
 		mBottomReached = false;		
-		mViewStates = new ArrayList<ViewState>();		
+		mViewStatuses = new ArrayList<ViewStatus>();		
 		mChildAdapterPositions = new ArrayList<Integer>();
 		
 		removeAllViewsInLayout();
