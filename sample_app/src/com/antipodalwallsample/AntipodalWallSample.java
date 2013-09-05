@@ -16,7 +16,7 @@ public class AntipodalWallSample extends Activity {
 		setContentView(R.layout.activity_antipodal_wall_sample);
 		
 		List<Breed> breeds = new ArrayList<Breed>();
-		for(int i = 0; i < 100; i++) {
+		for(int i = 0; i < 5; i++) {
 		breeds.add(new Breed("Akita Inu", R.drawable.dog_0));
 		breeds.add(new Breed("Perro de presa canario", R.drawable.dog_1));
 		breeds.add(new Breed("Papillon", R.drawable.dog_2));

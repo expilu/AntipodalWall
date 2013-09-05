@@ -53,7 +53,7 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	private int mFirstTouchY = 0;
 	private int mScrollChange = 0;
 	private int mScrollOffset = 0;
-	List<Integer> mViewStates;
+	List<ViewState> mViewStates;
 	List<Integer> mChildAdapterPositions;
 	
 	//================================================================================
@@ -88,7 +88,7 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 		
 		mBottomReached = false;
 		
-		mViewStates = new ArrayList<Integer>();
+		mViewStates = new ArrayList<ViewState>();
 		
 		mChildAdapterPositions = new ArrayList<Integer>();
 	}
@@ -133,7 +133,7 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 		
 		checkAndSetViewStates();
 		
-		int freeSpacePosition = findFreeSpacePosition();
+		FreeSpacePosition freeSpacePosition = findFreeSpacePosition();
 		Log.i("test", String.valueOf(freeSpacePosition));
 		
 		while(!mBottomReached && !checkAllColumsHigherThan(mColumnsHeights, mLayoutHeight + mScrollOffset)) {
@@ -226,19 +226,19 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	 *            which column specification to find
 	 * @return the found column index
 	 */
-	private int findColumn(int[] columns, int which) {
+	private int findColumn(int[] columns, ColumnSpec which) {
 		int comp = columns[0];
 		int column = 0;
 		for (int i = 1; i < columns.length; i++) {
 			boolean replace = false;
 
 			switch (which) {
-			case ColumnSpec.LOWEST:
-				replace = columns[i] < comp;
-				break;
-			case ColumnSpec.HIGHEST:
-				replace = columns[i] > comp;
-				break;
+				case LOWEST:
+					replace = columns[i] < comp;
+					break;
+				case HIGHEST:
+					replace = columns[i] > comp;
+					break;
 			}
 
 			if (replace) {
@@ -266,7 +266,7 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 	}
 	
 	private void checkAndSetViewStates() {
-		mViewStates = new ArrayList<Integer>();
+		mViewStates = new ArrayList<ViewState>();
 		for(int i = 0; i < getChildCount(); i++) {
 			if(isViewVisible(getChildAt(i)))
 				mViewStates.add(ViewState.VISIBLE);
@@ -296,7 +296,7 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 		}
 	}
 	
-	private int findFreeSpacePosition() {
+	private FreeSpacePosition findFreeSpacePosition() {
 		//TODO this is wrong
 		int viewPortTop = mScrollOffset;
 		int viewPortBottom = mScrollOffset + mLayoutHeight;		
@@ -344,7 +344,7 @@ public class AntipodalWallLayout extends AdapterView<Adapter> {
 		mItemsTops = new int[mAdapter.getCount()];
 		mColumnsHeights = new int[mColumns];		
 		mBottomReached = false;		
-		mViewStates = new ArrayList<Integer>();		
+		mViewStates = new ArrayList<ViewState>();		
 		mChildAdapterPositions = new ArrayList<Integer>();
 		
 		removeAllViewsInLayout();
