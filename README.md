@@ -51,7 +51,7 @@ There is a sample app project that already implements the layout in the sample_a
 Developed By
 ============
 
-* Daniel López Lacalle - <expilu@gmail.com>
+* Daniel López Lacalle
 
 License
 =======
