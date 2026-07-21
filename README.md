@@ -1,6 +1,8 @@
 AntipodalWall (beta!)
 =====================
 
+[![Join the chat at https://gitter.im/AntipodalWall/Lobby](https://badges.gitter.im/AntipodalWall/Lobby.svg)](https://gitter.im/AntipodalWall/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 AntipodalWall is an standalone library designed to provide a so called "masonry"
 grid layout for Android (much like Pinterest app). This layout acommodates it's children views
 in a configurable number of columns letting them grow vertically as much as they need.
